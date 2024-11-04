@@ -1,0 +1,37 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+# Here we are deifining BatchJob/Workflow name
+name: zdemoaction s5hana server deployment
+
+# Here we are defining when wil the deployment stat on which command
+on:
+  push:
+    branches: [ "main" ]
+
+#  Here we are setting Batch Job to run latest Ubuntu Machine
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # Here we will install the latest Node.js version in Ubuntu Machine
+        node-version: [22.x]
+        
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    # This are the build in steps which will take the version & run npm commands & 
+    # Here we will append npm run deploy command
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run deploy
+    - run: npm run build --if-present
+    - run: npm test
